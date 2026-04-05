@@ -1,0 +1,65 @@
+{
+  "rf": {
+    "name": "Random Forest",
+    "metrics": {
+      "accuracy": 0.9574,
+      "precision": 0.9575,
+      "recall": 0.9574,
+      "f1_score": 0.9574,
+      "roc_auc": 0.9937,
+      "confusion_matrix": [
+        [
+          4118,
+          187
+        ],
+        [
+          237,
+          5407
+        ]
+      ]
+    }
+  },
+  "xgb": {
+    "name": "XGBoost",
+    "metrics": {
+      "accuracy": 0.9806,
+      "precision": 0.9806,
+      "recall": 0.9806,
+      "f1_score": 0.9806,
+      "roc_auc": 0.9987,
+      "confusion_matrix": [
+        [
+          4217,
+          88
+        ],
+        [
+          105,
+          5539
+        ]
+      ]
+    }
+  },
+  "lgbm": {
+    "name": "LightGBM",
+    "metrics": {
+      "accuracy": 0.9871,
+      "precision": 0.9871,
+      "recall": 0.9871,
+      "f1_score": 0.9871,
+      "roc_auc": 0.9994,
+      "confusion_matrix": [
+        [
+          4243,
+          62
+        ],
+        [
+          66,
+          5578
+        ]
+      ]
+    }
+  },
+  "best_model": "lgbm",
+  "dataset_size": 49745,
+  "features_count": 21
+}

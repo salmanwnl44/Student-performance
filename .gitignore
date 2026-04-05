@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+venv/
+.env/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (regenerate with: python data/generate_data.py)
+data/raw/*.csv
+
+# Models (regenerate with: python scripts/train_pipeline.py)
+models/*.pkl
+
+# Logs
+logs/*.log
+
+# Jupyter
+.ipynb_checkpoints/

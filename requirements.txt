@@ -1,0 +1,15 @@
+pandas
+numpy
+polars
+dask
+scikit-learn
+xgboost
+lightgbm
+catboost
+fastapi
+uvicorn
+streamlit
+mlflow
+pydantic
+evidently
+pytest

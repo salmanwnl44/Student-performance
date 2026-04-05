@@ -226,8 +226,8 @@ Actual Safe   4,243      62
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/student-performance-ml.git
-cd student-performance-ml
+git clone https://github.com/salmanwnl44/Student-performance.git
+cd Student-performance
 
 # 2. Create a virtual environment (recommended)
 python -m venv venv
@@ -582,5 +582,3 @@ This project is available under the [MIT License](LICENSE).
 <div align="center">
   <strong>Built with Python, scikit-learn, FastAPI, and Streamlit</strong>
 </div>
-#   S t u d e n t - p e r f o r m a n c e  
- 
