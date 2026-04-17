@@ -13,3 +13,11 @@ mlflow
 pydantic
 evidently
 pytest
+# AI Retention Assistant Dependencies
+groq
+langchain
+langchain-community
+langchain-core
+sqlalchemy
+chromadb
+python-dotenv

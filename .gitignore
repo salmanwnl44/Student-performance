@@ -11,8 +11,7 @@ build/
 venv/
 .env/
 env/
-
-# IDE
+.env
 .vscode/
 .idea/
 *.swp
