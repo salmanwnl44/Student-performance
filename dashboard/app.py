@@ -532,31 +532,7 @@ def render_artifact_panel(data, gpa, att, mid, study, miss, payload):
         for p in data["quantified_plans"]:
             st.success(f"**{p['action']}**  \n*Estimated Impact: Reduces risk by {p['reduction']:.1%}*")
 
-    st.markdown("#### Risk Trends & Influencers")
-    c1, c2 = st.columns(2)
 
-    with c1:
-        if "risk_history" in data:
-            df_t = pd.DataFrame(data["risk_history"])
-            ft = px.line(df_t, x="week", y="risk", title="5-Week Risk Trend",
-                         markers=True, color_discrete_sequence=['#c75c5c'])
-            ft.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                              font=dict(color='#6b7280'), height=250,
-                              margin=dict(t=30, b=10, l=10, r=10))
-            st.plotly_chart(ft, width='stretch', key="artifact_risk_trend")
-
-    with c2:
-        if "feature_importance" in data:
-            df_f = pd.DataFrame(list(data["feature_importance"].items()), columns=["Feature", "Impact"])
-            ff = px.bar(df_f, x="Impact", y="Feature", orientation='h',
-                        title="Top Risk Drivers", color_discrete_sequence=['#d4a053'])
-            ff.update_layout(yaxis={'categoryorder': 'total ascending'},
-                             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                             font=dict(color='#6b7280'), height=250,
-                             margin=dict(t=30, b=10, l=150, r=10))
-            st.plotly_chart(ff, width='stretch', key="artifact_feature_importance")
-
-    render_whatif_simulator(data, att, study, payload)
 
 
 def render_risk_assessment():
