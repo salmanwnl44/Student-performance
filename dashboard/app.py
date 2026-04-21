@@ -331,14 +331,14 @@ with st.sidebar:
 
     _cb1, _cb2 = st.columns(2)
     with _cb1:
-        if st.button("Clear Chat", use_container_width=True):
+        if st.button("Clear Chat", width='stretch'):
             st.session_state.messages = []
             st.session_state.current_dropout_prob = None
             if "artifact_data" in st.session_state:
                 del st.session_state.artifact_data
             st.rerun()
     with _cb2:
-        if st.button("Clear Cache", use_container_width=True):
+        if st.button("Clear Cache", width='stretch'):
             st.cache_data.clear()
             st.cache_resource.clear()
             st.toast("Cache cleared.", icon="✓")
@@ -388,7 +388,7 @@ with st.sidebar:
         study   = st.slider("Study Hours / Week", 0.0, 40.0, 8.0)
 
         st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
-        go_btn = st.form_submit_button("Run Analysis", use_container_width=True)
+        go_btn = st.form_submit_button("Run Analysis", width='stretch')
 
 # Removed inputs kept at sensible defaults for API payload
 payload = {
@@ -480,7 +480,7 @@ def render_risk_widgets(d, widget_key=""):
                 height=370,
                 margin=dict(t=50, b=30, l=80, r=80)
             )
-            st.plotly_chart(fig, use_container_width=True, key=f"radar_{widget_key}")
+            st.plotly_chart(fig, width='stretch', key=f"radar_{widget_key}")
 
     with cg:
         with st.container(border=True):
@@ -508,7 +508,7 @@ def render_risk_widgets(d, widget_key=""):
                 height=300,
                 margin=dict(t=50, b=20, l=30, r=30)
             )
-            st.plotly_chart(fg, use_container_width=True, key=f"gauge_{widget_key}")
+            st.plotly_chart(fg, width='stretch', key=f"gauge_{widget_key}")
 
 
 @st.fragment
@@ -568,7 +568,7 @@ def render_artifact_panel(data, gpa, att, mid, study, miss, payload):
             ft.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                               font=dict(color='#6b7280'), height=250,
                               margin=dict(t=30, b=10, l=10, r=10))
-            st.plotly_chart(ft, use_container_width=True, key="artifact_risk_trend")
+            st.plotly_chart(ft, width='stretch', key="artifact_risk_trend")
 
     with c2:
         if "feature_importance" in data:
@@ -579,7 +579,7 @@ def render_artifact_panel(data, gpa, att, mid, study, miss, payload):
                              paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                              font=dict(color='#6b7280'), height=250,
                              margin=dict(t=30, b=10, l=150, r=10))
-            st.plotly_chart(ff, use_container_width=True, key="artifact_feature_importance")
+            st.plotly_chart(ff, width='stretch', key="artifact_feature_importance")
 
     render_whatif_simulator(data, att, study, payload)
 
@@ -735,7 +735,7 @@ def render_model_comparison():
                         ' ':         '◆' if k == best else '',
                     })
             if rows:
-                st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
 
             bd = []
             for k in ['rf', 'xgb', 'lgbm']:
@@ -754,7 +754,7 @@ def render_model_comparison():
                     height=380,
                     legend=dict(font=dict(color='#9ca3af'))
                 )
-                st.plotly_chart(fb, use_container_width=True, key="model_comparison_bar")
+                st.plotly_chart(fb, width='stretch', key="model_comparison_bar")
         else:
             st.info("No training data available yet.")
     except Exception as e:
@@ -781,7 +781,7 @@ def render_data_explorer():
             fg.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                              font=dict(color='#6b7280', family='Inter'), showlegend=False, height=300,
                              xaxis=dict(gridcolor='#1e2230'), yaxis=dict(gridcolor='#1e2230'))
-            st.plotly_chart(fg, use_container_width=True, key="explorer_grade_dist")
+            st.plotly_chart(fg, width='stretch', key="explorer_grade_dist")
 
         with c2:
             st.markdown("<p class='t-overline' style='margin-top:16px'>dropout rate by department</p>", unsafe_allow_html=True)
@@ -791,7 +791,7 @@ def render_data_explorer():
             fd.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                              font=dict(color='#6b7280', family='Inter'), showlegend=False, height=300,
                              xaxis=dict(gridcolor='#1e2230', tickformat='.0%'), yaxis=dict(gridcolor='#1e2230'))
-            st.plotly_chart(fd, use_container_width=True, key="explorer_dropout_dept")
+            st.plotly_chart(fd, width='stretch', key="explorer_dropout_dept")
 
         st.markdown("<p class='t-overline' style='margin-top:16px'>feature correlation matrix</p>", unsafe_allow_html=True)
         ndf  = df.select_dtypes(include=[np.number])
@@ -801,10 +801,10 @@ def render_data_explorer():
                         zmin=-1, zmax=1, aspect='auto')
         fcc.update_layout(paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#6b7280', family='Inter', size=8),
                           height=500, margin=dict(t=20, b=20))
-        st.plotly_chart(fcc, use_container_width=True, key="explorer_corr_matrix")
+        st.plotly_chart(fcc, width='stretch', key="explorer_corr_matrix")
 
         st.markdown("<p class='t-overline' style='margin-top:16px'>sample records</p>", unsafe_allow_html=True)
-        st.dataframe(df.head(80), use_container_width=True, height=350)
+        st.dataframe(df.head(80), width='stretch', height=350)
 
     except FileNotFoundError:
         st.info("No dataset found at data/raw/synthetic_student_data.csv.")
