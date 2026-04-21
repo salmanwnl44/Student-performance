@@ -10,11 +10,9 @@ import os
 
 from src.reasoning.reasoning_engine import ReasoningEngine
 from src.intervention.intervention_engine import InterventionEngine
-from src.rag.retriever import RAGRetriever
 
 reasoning_engine = ReasoningEngine()
 intervention_engine = InterventionEngine()
-rag_retriever = RAGRetriever()
 
 app = FastAPI(title="Student Intelligence API", version="2.1.0", description="AI-powered student risk assessment")
 
@@ -239,7 +237,8 @@ def chat_student(request: ChatRequest):
         risk_level = "High" if proba > 0.6 else "Medium" if proba > 0.3 else "Low"
         
         reasoning = reasoning_engine.generate_reasoning(request.student.model_dump(), proba)
-        rag_context = rag_retriever.get_context_for_student(request.student.department, risk_level)
+        from src.rag.retriever import RAGRetriever
+        rag_context = RAGRetriever().get_context_for_student(request.student.department, risk_level)
         
         system_prompt = (
             "You are a friendly, personal AI Mentor for the student. "

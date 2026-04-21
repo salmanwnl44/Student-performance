@@ -243,27 +243,7 @@ h1, h2, h3, h4 { color: #edeae6 !important; font-weight: 700; letter-spacing: -0
 /* ── Form ── */
 .stForm { border: none !important; padding: 0 !important; }
 
-/* ── Chat input ── */
-[data-testid="stChatInput"] textarea {
-    background: #161b26 !important;
-    border: 1px solid #1e2436 !important;
-    border-radius: 10px !important;
-    color: #edeae6 !important;
-    font-family: 'Inter', sans-serif !important;
-    transition: border-color 0.2s ease !important;
-}
-[data-testid="stChatInput"] textarea:focus {
-    border-color: rgba(212,160,83,0.4) !important;
-    box-shadow: 0 0 0 3px rgba(212,160,83,0.07) !important;
-}
 
-/* ── Chat messages ── */
-[data-testid="stChatMessage"] {
-    background: #13161f !important;
-    border: 1px solid #1a1f2e !important;
-    border-radius: 12px !important;
-    padding: 14px 18px !important;
-}
 
 /* ── Containers with border ── */
 [data-testid="stVerticalBlockBorderWrapper"] {
@@ -291,8 +271,6 @@ ICON = {
 
 if "current_dropout_prob" not in st.session_state:
     st.session_state.current_dropout_prob = None
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
 # ── HEADER ──
 col1, col2 = st.columns([3, 1])
@@ -329,19 +307,16 @@ st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 with st.sidebar:
     dev_mode = st.toggle("Developer Mode", value=False)
 
-    _cb1, _cb2 = st.columns(2)
-    with _cb1:
-        if st.button("Clear Chat", width='stretch'):
-            st.session_state.messages = []
-            st.session_state.current_dropout_prob = None
-            if "artifact_data" in st.session_state:
-                del st.session_state.artifact_data
-            st.rerun()
-    with _cb2:
-        if st.button("Clear Cache", width='stretch'):
-            st.cache_data.clear()
-            st.cache_resource.clear()
-            st.toast("Cache cleared.", icon="✓")
+    if st.button("Clear Cache", width='stretch'):
+        st.cache_data.clear()
+        st.cache_resource.clear()
+        st.toast("Cache cleared.", icon="✓")
+
+    if st.button("Reset Analysis", width='stretch'):
+        st.session_state.current_dropout_prob = None
+        if "artifact_data" in st.session_state:
+            del st.session_state.artifact_data
+        st.rerun()
 
     st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
     st.markdown("<p class='t-overline'>student profile</p>", unsafe_allow_html=True)
@@ -584,54 +559,12 @@ def render_artifact_panel(data, gpa, att, mid, study, miss, payload):
     render_whatif_simulator(data, att, study, payload)
 
 
-def render_main_assistant():
-    col_chat = st.container()
-
-    with col_chat:
-        for msg_idx, msg in enumerate(st.session_state.messages):
-            with st.chat_message(msg["role"]):
-                if msg.get("type") == "risk_report":
-                    st.markdown("**Analysis complete.** Here is the interactive risk report:")
-                    render_risk_widgets(msg["data"], widget_key=msg.get("id", str(msg_idx)))
-                    st.markdown(msg["content"])
-                    if not any(m.get("type") == "artifact_panel" for m in st.session_state.messages):
-                        st.markdown(
-                            "<br/>I can generate a detailed action plan with AI reasoning, trends, and simulations.",
-                            unsafe_allow_html=True
-                        )
-                        if st.button("Create Detailed Report", key=f"btn_gen_{msg.get('id', str(msg_idx))}", type="primary"):
-                            st.session_state.messages.append({
-                                "role": "assistant",
-                                "type": "artifact_panel",
-                                "content": "I've drafted the detailed plan:",
-                            })
-                            st.rerun()
-
-                elif msg.get("type") == "artifact_panel":
-                    st.markdown(msg["content"])
-                    if "artifact_data" in st.session_state and st.session_state.artifact_data:
-                        if "reasoning" not in st.session_state.artifact_data:
-                            with st.spinner("Drafting detailed plan..."):
-                                r_llm = api_post("/predict/analyze", payload)
-                                if r_llm is not None and r_llm.status_code == 200:
-                                    llm_data = r_llm.json()
-                                    st.session_state.artifact_data["reasoning"]     = llm_data["reasoning"]
-                                    st.session_state.artifact_data["intervention"]  = llm_data["intervention"]
-                                    st.rerun()
-                                elif r_llm is None:
-                                    st.warning("⚠️ Could not connect to the API to generate reasoning. Try again.")
-                        with st.container(border=True):
-                            render_artifact_panel(
-                                st.session_state.artifact_data,
-                                gpa, att, mid, study, miss, payload
-                            )
-                else:
-                    st.markdown(msg["content"])
-
-        if go_btn:
-            import uuid
-            loading_slot = st.empty()
-            loading_slot.markdown("""
+def render_risk_assessment():
+    """Render the risk assessment panel directly (no chat interface)."""
+    if go_btn:
+        import uuid
+        loading_slot = st.empty()
+        loading_slot.markdown("""
 <div style="
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     padding: 60px 20px; background:#1a1e28; border:1px solid #24293a;
@@ -653,51 +586,55 @@ def render_main_assistant():
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 """, unsafe_allow_html=True)
-            r = api_post("/predict/dropout", payload)
-            loading_slot.empty()
-            if r is None:
-                st.error("⚠️ Could not connect to the API server. Make sure it is running (`uvicorn api.main:app --reload`) and try again.")
-            elif r.status_code == 200:
-                d = r.json()
-                d["id"] = str(uuid.uuid4())
-                st.session_state.current_dropout_prob = d["dropout_probability"]
-                if "artifact_data" not in st.session_state:
-                    st.session_state.artifact_data = {}
-                st.session_state.artifact_data.update(d)
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "type": "risk_report",
-                    "data": d,
-                    "content": "*Student profile analysed.*",
-                    "id": d["id"],
-                })
-                st.rerun()
-            else:
-                st.error(f"API returned error {r.status_code}: {r.text[:200]}")
+        r = api_post("/predict/dropout", payload)
+        loading_slot.empty()
+        if r is None:
+            st.error("⚠️ Could not connect to the API server. Make sure it is running (`uvicorn api.main:app --reload`) and try again.")
+        elif r.status_code == 200:
+            import uuid
+            d = r.json()
+            d["id"] = str(uuid.uuid4())
+            st.session_state.current_dropout_prob = d["dropout_probability"]
+            if "artifact_data" not in st.session_state:
+                st.session_state.artifact_data = {}
+            st.session_state.artifact_data.update(d)
+            st.rerun()
+        else:
+            st.error(f"API returned error {r.status_code}: {r.text[:200]}")
 
-    if prompt := st.chat_input("Ask how the student can improve..."):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with col_chat:
-            st.chat_message("user").markdown(prompt)
-            with st.chat_message("assistant"):
-                response = api_post("/chat/student", {"student": payload, "message": prompt})
-                if response is None:
-                    answer = "⚠️ Could not reach the API server. Please ensure it is running and try again."
-                    st.error(answer)
-                elif response.status_code == 200:
-                    answer = response.json().get("response", "No answer found.")
-                    st.markdown(answer)
-                    if "plan" in prompt.lower() and not any(m.get("type") == "artifact_panel" for m in st.session_state.messages):
-                        st.session_state.messages.append({
-                            "role": "assistant",
-                            "type": "artifact_panel",
-                            "content": "I've drafted the detailed plan:",
-                        })
-                        st.rerun()
-                else:
-                    answer = f"API error {response.status_code}. Try again."
-                    st.error(answer)
-                st.session_state.messages.append({"role": "assistant", "content": answer})
+    if "artifact_data" in st.session_state and st.session_state.artifact_data:
+        data = st.session_state.artifact_data
+        st.markdown("**Analysis complete.** Here is the interactive risk report:")
+        render_risk_widgets(data, widget_key=data.get("id", "main"))
+
+        if st.button("Generate Detailed Report", type="primary", key="btn_detailed_report"):
+            with st.spinner("Drafting detailed plan..."):
+                r_llm = api_post("/predict/analyze", payload)
+                if r_llm is not None and r_llm.status_code == 200:
+                    llm_data = r_llm.json()
+                    st.session_state.artifact_data["reasoning"]    = llm_data["reasoning"]
+                    st.session_state.artifact_data["intervention"] = llm_data["intervention"]
+                    st.rerun()
+                elif r_llm is None:
+                    st.warning("⚠️ Could not connect to the API to generate reasoning. Try again.")
+
+        if "reasoning" in st.session_state.artifact_data:
+            with st.container(border=True):
+                render_artifact_panel(
+                    st.session_state.artifact_data,
+                    gpa, att, mid, study, miss, payload
+                )
+    else:
+        st.markdown("""
+<div style="display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:80px 20px; text-align:center; border:1px dashed #1e2436; border-radius:12px; margin-top:20px;">
+  <p style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:#3d4455;
+     letter-spacing:3px; text-transform:uppercase; margin:0 0 8px 0;">awaiting input</p>
+  <p style="font-family:'Inter',sans-serif; font-size:0.9rem; color:#525868; margin:0;">
+    Fill in the student profile in the sidebar and click <strong style="color:#d4a053;">Run Analysis</strong>.
+  </p>
+</div>
+""", unsafe_allow_html=True)
 
 
 def render_model_comparison():
@@ -812,10 +749,10 @@ def render_data_explorer():
 
 # ── MAIN RENDER ──
 if dev_mode:
-    t1, t2, t3 = st.tabs(["AI Mentor", "Model Comparison", "Data Explorer"])
-    with t1: render_main_assistant()
+    t1, t2, t3 = st.tabs(["Risk Assessment", "Model Comparison", "Data Explorer"])
+    with t1: render_risk_assessment()
     with t2: render_model_comparison()
     with t3: render_data_explorer()
 else:
-    render_main_assistant()
+    render_risk_assessment()
 
