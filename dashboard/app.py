@@ -4,8 +4,27 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
+import time
 
 API_BASE = "http://localhost:8000"
+
+
+# ── Resilient API helpers (retry on connection reset) ──────────────────────
+def _api_request(method: str, url: str, **kwargs):
+    kwargs.setdefault("timeout", 30)
+    for attempt in range(2):
+        try:
+            return requests.request(method, url, **kwargs)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            if attempt == 0:
+                time.sleep(0.6)
+    return None
+
+def api_post(path: str, payload: dict):
+    return _api_request("POST", f"{API_BASE}{path}", json=payload)
+
+def api_get(path: str):
+    return _api_request("GET", f"{API_BASE}{path}")
 
 st.set_page_config(page_title="EduPulse — Student Analytics", layout="wide", page_icon="◉", initial_sidebar_state="expanded")
 
@@ -101,8 +120,6 @@ h1, h2, h3, h4 { color: #edeae6 !important; font-weight: 700; letter-spacing: -0
 .c-amber { color: #d4a053; }
 .c-coral { color: #c75c5c; }
 .c-sage  { color: #6b9e7a; }
-.c-blue  { color: #5b7fb5; }
-.c-ghost { color: #3d4455; }
 .c-light { color: #edeae6; }
 
 /* ── Cards ── */
@@ -120,10 +137,6 @@ h1, h2, h3, h4 { color: #edeae6 !important; font-weight: 700; letter-spacing: -0
     box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,160,83,0.06);
     transform: translateY(-1px);
 }
-.card-accent-amber { border-left: 3px solid #d4a053; background: linear-gradient(135deg, #1a1b1e 0%, #141820 100%); }
-.card-accent-coral { border-left: 3px solid #c75c5c; }
-.card-accent-sage  { border-left: 3px solid #6b9e7a; }
-.card-accent-blue  { border-left: 3px solid #5b7fb5; }
 
 /* ── Status Pills ── */
 .pill {
@@ -268,16 +281,12 @@ h1, h2, h3, h4 { color: #edeae6 !important; font-weight: 700; letter-spacing: -0
 """, unsafe_allow_html=True)
 
 ICON = {
-    "shield":    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-    "alert":     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-    "check":     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-    "book":      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
-    "clock":     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-    "target":    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
-    "users":     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
-    "trending":  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
-    "award":     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>',
-    "briefcase": '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>',
+    "alert":    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    "check":    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    "book":     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
+    "users":    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+    "trending": '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+    "award":    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>',
 }
 
 if "current_dropout_prob" not in st.session_state:
@@ -515,8 +524,10 @@ def render_whatif_simulator(data, att, study, payload):
             p2["attendance_rate"]    = sim_att
             p2["study_hours_weekly"] = sim_study
             with st.spinner("Simulating..."):
-                r2 = requests.post(f"{API_BASE}/predict/dropout", json=p2)
-                if r2.status_code == 200:
+                r2 = api_post("/predict/dropout", p2)
+                if r2 is None:
+                    st.error("⚠️ API unreachable. Please check the backend server.")
+                elif r2.status_code == 200:
                     d2       = r2.json()
                     new_risk = d2["dropout_probability"]
                     delta    = data["dropout_probability"] - new_risk
@@ -601,12 +612,14 @@ def render_main_assistant():
                     if "artifact_data" in st.session_state and st.session_state.artifact_data:
                         if "reasoning" not in st.session_state.artifact_data:
                             with st.spinner("Drafting detailed plan..."):
-                                r_llm = requests.post(f"{API_BASE}/predict/analyze", json=payload)
-                                if r_llm.status_code == 200:
+                                r_llm = api_post("/predict/analyze", payload)
+                                if r_llm is not None and r_llm.status_code == 200:
                                     llm_data = r_llm.json()
                                     st.session_state.artifact_data["reasoning"]     = llm_data["reasoning"]
                                     st.session_state.artifact_data["intervention"]  = llm_data["intervention"]
                                     st.rerun()
+                                elif r_llm is None:
+                                    st.warning("⚠️ Could not connect to the API to generate reasoning. Try again.")
                         with st.container(border=True):
                             render_artifact_panel(
                                 st.session_state.artifact_data,
@@ -640,9 +653,11 @@ def render_main_assistant():
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 """, unsafe_allow_html=True)
-            r = requests.post(f"{API_BASE}/predict/dropout", json=payload)
+            r = api_post("/predict/dropout", payload)
             loading_slot.empty()
-            if r.status_code == 200:
+            if r is None:
+                st.error("⚠️ Could not connect to the API server. Make sure it is running (`uvicorn api.main:app --reload`) and try again.")
+            elif r.status_code == 200:
                 d = r.json()
                 d["id"] = str(uuid.uuid4())
                 st.session_state.current_dropout_prob = d["dropout_probability"]
@@ -657,18 +672,21 @@ def render_main_assistant():
                     "id": d["id"],
                 })
                 st.rerun()
+            else:
+                st.error(f"API returned error {r.status_code}: {r.text[:200]}")
 
     if prompt := st.chat_input("Ask how the student can improve..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with col_chat:
             st.chat_message("user").markdown(prompt)
             with st.chat_message("assistant"):
-                try:
-                    response = requests.post(f"{API_BASE}/chat/student", json={"student": payload, "message": prompt})
-                    response.raise_for_status()
+                response = api_post("/chat/student", {"student": payload, "message": prompt})
+                if response is None:
+                    answer = "⚠️ Could not reach the API server. Please ensure it is running and try again."
+                    st.error(answer)
+                elif response.status_code == 200:
                     answer = response.json().get("response", "No answer found.")
                     st.markdown(answer)
-                    st.session_state.messages.append({"role": "assistant", "content": answer})
                     if "plan" in prompt.lower() and not any(m.get("type") == "artifact_panel" for m in st.session_state.messages):
                         st.session_state.messages.append({
                             "role": "assistant",
@@ -676,13 +694,18 @@ def render_main_assistant():
                             "content": "I've drafted the detailed plan:",
                         })
                         st.rerun()
-                except Exception as e:
-                    st.error(f"Error communicating with AI: {e}")
+                else:
+                    answer = f"API error {response.status_code}. Try again."
+                    st.error(answer)
+                st.session_state.messages.append({"role": "assistant", "content": answer})
 
 
 def render_model_comparison():
     try:
-        mr = requests.get(f"{API_BASE}/metrics")
+        mr = api_get("/metrics")
+        if mr is None:
+            st.warning("⚠️ Cannot connect to API server to load metrics.")
+            return
         if mr.status_code == 200:
             md   = mr.json()
             best = md.get("best_model", "rf")
@@ -795,3 +818,4 @@ if dev_mode:
     with t3: render_data_explorer()
 else:
     render_main_assistant()
+
