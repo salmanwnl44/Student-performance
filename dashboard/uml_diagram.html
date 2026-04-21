@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduPulse – UML Class Diagram</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e8e8e8;
+      font-family: 'Roboto', Arial, sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* ── frame wrapper ── */
+    .frame {
+      position: relative;
+      background: #f0f0f0;
+      border: 1.5px solid #aaa;
+      border-radius: 0;
+      display: inline-block;
+      min-width: 100%;
+    }
+    .frame-label {
+      position: absolute;
+      top: 0; left: 0;
+      background: #f0f0f0;
+      border: 1.5px solid #aaa;
+      font-size: 11px;
+      padding: 2px 10px;
+      font-weight: 500;
+      color: #333;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── diagram scroll area ── */
+    .diagram {
+      position: relative;
+      width: 1100px;
+      height: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── UML Class Box ── */
+    .uml-box {
+      position: absolute;
+      background: #fff;
+      border: 1.5px solid #555;
+      min-width: 170px;
+      font-size: 11.5px;
+      color: #111;
+    }
+    .uml-box .box-header {
+      background: #fff;
+      border-bottom: 1.5px solid #555;
+      text-align: center;
+      padding: 5px 10px 4px;
+    }
+    .uml-box .box-header .stereotype {
+      font-size: 10px;
+      color: #444;
+      font-style: normal;
+      display: block;
+    }
+    .uml-box .box-header .classname {
+      font-weight: 700;
+      font-size: 12px;
+      display: block;
+      margin-top: 1px;
+    }
+    .uml-box .box-section {
+      padding: 5px 10px;
+      border-bottom: 1.5px solid #555;
+      line-height: 1.65;
+      color: #222;
+      font-size: 11px;
+    }
+    .uml-box .box-section:last-child { border-bottom: none; }
+    .uml-box .box-section p { white-space: nowrap; }
+
+    /* ── Orange interface box ── */
+    .uml-iface {
+      position: absolute;
+      background: #f5a623;
+      border: 1.5px solid #c07000;
+      text-align: center;
+      padding: 8px 14px 7px;
+      min-width: 110px;
+      font-size: 11px;
+      color: #fff;
+    }
+    .uml-iface .stereotype { font-size: 10px; display: block; }
+    .uml-iface .iname { font-weight: 700; font-size: 12px; display: block; margin-top: 1px; }
+
+    /* ── SVG arrows overlay ── */
+    .arrows-svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .arr-dash { stroke: #555; stroke-width: 1.4; fill: none; stroke-dasharray: 6 3; }
+    .arr-solid { stroke: #555; stroke-width: 1.4; fill: none; }
+    .arr-head { stroke: #555; stroke-width: 1.4; fill: none; }
+    .arr-head-open { stroke: #555; stroke-width: 1.4; fill: none; }
+    .arrow-label {
+      font-size: 10px;
+      fill: #555;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+<div class="frame">
+  <span class="frame-label">frame</span>
+
+  <div class="diagram">
+
+    <!-- ══════════════════════════════════════
+         UML CLASS / INTERFACE BOXES
+    ══════════════════════════════════════ -->
+
+    <!-- 1. IDataIngestion (Interface) – top-left -->
+    <div class="uml-box" id="b-ing" style="left:30px; top:60px; width:190px;">
+      <div class="box-header">
+        <span class="stereotype">&lt;&lt;Interface&gt;&gt;</span>
+        <span class="classname">IDataIngestion</span>
+      </div>
+      <div class="box-section">
+        <p>+ source: String</p>
+        <p>+ schema: Dict</p>
+      </div>
+      <div class="box-section">
+        <p>+ load(path): DataFrame</p>
+        <p>+ validate(): Boolean</p>
+      </div>
+    </div>
+
+    <!-- 2. DataIngestion (Class) – top-center -->
+    <div class="uml-box" id="b-ing-impl" style="left:310px; top:40px; width:195px;">
+      <div class="box-header">
+        <span class="classname">DataIngestion</span>
+      </div>
+      <div class="box-section">
+        <p>+ filepath: String</p>
+        <p>+ df: DataFrame</p>
+        <p>+ config: Dict</p>
+      </div>
+      <div class="box-section">
+        <p>+ load(): DataFrame</p>
+        <p>+ run_pipeline(): None</p>
+      </div>
+    </div>
+
+    <!-- 3. DataValidator (Class) – top-right -->
+    <div class="uml-box" id="b-val" style="left:600px; top:60px; width:200px;">
+      <div class="box-header">
+        <span class="classname">DataValidator</span>
+      </div>
+      <div class="box-section">
+        <p>+ rules: List</p>
+        <p>+ errors: List</p>
+        <p>+ df: DataFrame</p>
+      </div>
+      <div class="box-section">
+        <p>+ check_schema(): Bool</p>
+        <p>+ check_nulls(): Report</p>
+        <p>+ validate(): Bool</p>
+      </div>
+    </div>
+
+    <!-- 4. IPreprocessor (Interface) – left-center -->
+    <div class="uml-box" id="b-preproc" style="left:30px; top:270px; width:190px;">
+      <div class="box-header">
+        <span class="stereotype">&lt;&lt;Interface&gt;&gt;</span>
+        <span class="classname">IPreprocessor</span>
+      </div>
+      <div class="box-section">
+        <p>+ scaler: Object</p>
+        <p>+ encoder: Object</p>
+      </div>
+      <div class="box-section">
+        <p>+ fit_transform(df): DF</p>
+        <p>+ inverse(df): DF</p>
+      </div>
+    </div>
+
+    <!-- 5. Preprocessor (Class) – center -->
+    <div class="uml-box" id="b-preproc-impl" style="left:310px; top:250px; width:200px;">
+      <div class="box-header">
+        <span class="stereotype">&lt;&lt;Interface&gt;&gt;</span>
+        <span class="classname">Preprocessor</span>
+      </div>
+      <div class="box-section">
+        <p>+ num_cols: List</p>
+        <p>+ cat_cols: List</p>
+      </div>
+      <div class="box-section">
+        <p>+ encode(df): DataFrame</p>
+        <p>+ scale(df): DataFrame</p>
+        <p>+ impute(df): DataFrame</p>
+      </div>
+    </div>
+
+    <!-- 6. «interface» Encoder – orange right-center -->
+    <div class="uml-iface" id="b-enc" style="left:620px; top:295px;">
+      <span class="stereotype">&lt;interface&gt;</span>
+      <span class="iname">Encoder</span>
+    </div>
+
+    <!-- 7. IModelTrainer (Interface) – left -->
+    <div class="uml-box" id="b-trainer" style="left:30px; top:480px; width:190px;">
+      <div class="box-header">
+        <span class="stereotype">&lt;&lt;Interface&gt;&gt;</span>
+        <span class="classname">IModelTrainer</span>
+      </div>
+      <div class="box-section">
+        <p>+ model: Object</p>
+        <p>+ metrics: Dict</p>
+      </div>
+      <div class="box-section">
+        <p>+ train(X, y): None</p>
+        <p>+ evaluate(X, y): Dict</p>
+      </div>
+    </div>
+
+    <!-- 8. ModelTrainer (Class) – center-bottom -->
+    <div class="uml-box" id="b-trainer-impl" style="left:310px; top:460px; width:205px;">
+      <div class="box-header">
+        <span class="classname">ModelTrainer</span>
+      </div>
+      <div class="box-section">
+        <p>+ algorithm: String</p>
+        <p>+ hyperparams: Dict</p>
+        <p>+ best_model: Object</p>
+      </div>
+      <div class="box-section">
+        <p>+ train(X, y): None</p>
+        <p>+ save(path): None</p>
+        <p>+ cross_validate(): Dict</p>
+      </div>
+    </div>
+
+    <!-- 9. «interface» Predictor – orange mid-bottom -->
+    <div class="uml-iface" id="b-pred" style="left:395px; top:660px; width:125px;">
+      <span class="stereotype">&lt;interface&gt;</span>
+      <span class="iname">Predictor</span>
+    </div>
+
+    <!-- 10. «interface» RAGStore – orange -->
+    <div class="uml-iface" id="b-rag" style="left:590px; top:490px; width:130px;">
+      <span class="stereotype">&lt;interface&gt;</span>
+      <span class="iname">RAGStore</span>
+    </div>
+
+    <!-- 11. FastAPI (Class) – right -->
+    <div class="uml-box" id="b-api" style="left:810px; top:60px; width:215px;">
+      <div class="box-header">
+        <span class="classname">FastAPI (app)</span>
+      </div>
+      <div class="box-section">
+        <p>+ host: String</p>
+        <p>+ port: Integer</p>
+        <p>+ router: APIRouter</p>
+      </div>
+      <div class="box-section">
+        <p>+ POST /predict(): JSON</p>
+        <p>+ GET  /metrics(): JSON</p>
+        <p>+ GET  /health(): JSON</p>
+      </div>
+    </div>
+
+    <!-- 12. Database (Class) – right-bottom -->
+    <div class="uml-box" id="b-db" style="left:810px; top:340px; width:215px;">
+      <div class="box-header">
+        <span class="classname">DatabaseService</span>
+      </div>
+      <div class="box-section">
+        <p>+ conn: Connection</p>
+        <p>+ schema: String</p>
+      </div>
+      <div class="box-section">
+        <p>+ save_prediction(): None</p>
+        <p>+ fetch_student(): Row</p>
+        <p>+ get_metrics(): Dict</p>
+      </div>
+    </div>
+
+    <!-- 13. Dashboard (Class) – right-lower -->
+    <div class="uml-box" id="b-dash" style="left:810px; top:570px; width:215px;">
+      <div class="box-header">
+        <span class="classname">StreamlitDashboard</span>
+      </div>
+      <div class="box-section">
+        <p>+ api_url: String</p>
+        <p>+ session: Dict</p>
+      </div>
+      <div class="box-section">
+        <p>+ render_prediction(): None</p>
+        <p>+ render_metrics(): None</p>
+        <p>+ run(): None</p>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+         SVG ARROWS
+    ══════════════════════════════════════ -->
+    <svg class="arrows-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- open arrowhead (dependency) -->
+        <marker id="open" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+          <polyline points="0,0 8,3.5 0,7" class="arr-head" fill="none" stroke="#555" stroke-width="1.3"/>
+        </marker>
+        <!-- hollow triangle (realization) -->
+        <marker id="hollow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <polygon points="0,0 9,4 0,8" fill="white" stroke="#555" stroke-width="1.3"/>
+        </marker>
+        <!-- filled triangle (inheritance) -->
+        <marker id="filled" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <polygon points="0,0 9,4 0,8" fill="#555" stroke="#555" stroke-width="1"/>
+        </marker>
+      </defs>
+
+      <!-- IDataIngestion ---(realize)---> DataIngestion -->
+      <line x1="220" y1="115" x2="308" y2="100" class="arr-dash" marker-end="url(#hollow)"/>
+
+      <!-- DataIngestion ---(uses)---> DataValidator -->
+      <line x1="505" y1="95" x2="598" y2="110" class="arr-dash" marker-end="url(#open)"/>
+
+      <!-- IDataIngestion ---(assoc)---> IPreprocessor (vertical) -->
+      <line x1="125" y1="192" x2="125" y2="268" class="arr-solid" marker-end="url(#open)"/>
+
+      <!-- IPreprocessor ---(realize)---> Preprocessor -->
+      <line x1="220" y1="315" x2="308" y2="315" class="arr-dash" marker-end="url(#hollow)"/>
+
+      <!-- Preprocessor ---(uses)---> Encoder -->
+      <line x1="510" y1="315" x2="618" y2="315" class="arr-dash" marker-end="url(#open)"/>
+
+      <!-- DataValidator ---(assoc down)---> Preprocessor (right side) -->
+      <polyline points="700,190 700,230 460,230 460,248" class="arr-solid" marker-end="url(#open)" fill="none" stroke="#555" stroke-width="1.4"/>
+
+      <!-- IPreprocessor ---(assoc)---> IModelTrainer (vertical) -->
+      <line x1="125" y1="390" x2="125" y2="478" class="arr-solid" marker-end="url(#open)"/>
+
+      <!-- IModelTrainer ---(realize)---> ModelTrainer -->
+      <line x1="220" y1="530" x2="308" y2="530" class="arr-dash" marker-end="url(#hollow)"/>
+
+      <!-- ModelTrainer ---(uses)---> Predictor -->
+      <line x1="412" y1="575" x2="445" y2="658" class="arr-dash" marker-end="url(#open)"/>
+
+      <!-- Preprocessor ---(uses)---> RAGStore (right side going down) -->
+      <polyline points="510,330 570,330 570,490 588,505" class="arr-dash" marker-end="url(#open)" fill="none" stroke="#555" stroke-width="1.4" stroke-dasharray="6 3"/>
+
+      <!-- FastAPI ---(uses)---> DatabaseService -->
+      <line x1="917" y1="200" x2="917" y2="338" class="arr-dash" marker-end="url(#open)"/>
+
+      <!-- FastAPI ---(assoc)---> DataValidator (left) -->
+      <polyline points="808,130 755,130 755,130 800,130" class="arr-solid" marker-end="url(#open)" fill="none" stroke="#555" stroke-width="1.4"/>
+      <line x1="800" y1="130" x2="803" y2="130" class="arr-solid"/>
+      <!-- simpler: FastAPI left edge to DataValidator right edge -->
+      <line x1="808" y1="130" x2="802" y2="130" class="arr-solid"/>
+      <polyline points="800,130 757,130" class="arr-solid" marker-end="url(#open)" fill="none" stroke="#555" stroke-width="1.4"/>
+
+      <!-- DatabaseService ---(assoc)---> StreamlitDashboard -->
+      <line x1="917" y1="490" x2="917" y2="568" class="arr-solid" marker-end="url(#open)"/>
+
+      <!-- StreamlitDashboard ---(uses)---> Predictor -->
+      <polyline points="808,620 750,620 750,690 522,690 522,675" class="arr-dash" marker-end="url(#open)" fill="none" stroke="#555" stroke-width="1.4" stroke-dasharray="6 3"/>
+
+      <!-- RAGStore ---(assoc)---> DatabaseService -->
+      <line x1="722" y1="505" x2="808" y2="430" class="arr-solid" marker-end="url(#open)"/>
+
+      <!-- Encoder ---(assoc)---> FastAPI -->
+      <polyline points="726,300 775,300 775,150 808,140" class="arr-solid" marker-end="url(#open)" fill="none" stroke="#555" stroke-width="1.4"/>
+    </svg>
+
+  </div><!-- /diagram -->
+
+  <!-- ── Legend strip ── -->
+  <div style="display:flex; gap:28px; align-items:center; padding:10px 24px 12px; border-top:1px solid #bbb; background:#e8e8e8; flex-wrap:wrap;">
+    <span style="font-size:11px; font-weight:700; color:#333; letter-spacing:.5px;">LEGEND</span>
+    <span style="font-size:11px; color:#333; display:flex; align-items:center; gap:6px;">
+      <svg width="38" height="12"><line x1="0" y1="6" x2="28" y2="6" stroke="#555" stroke-width="1.4" stroke-dasharray="5 2"/><polygon points="28,2 38,6 28,10" fill="white" stroke="#555" stroke-width="1.3"/></svg>
+      Realization
+    </span>
+    <span style="font-size:11px; color:#333; display:flex; align-items:center; gap:6px;">
+      <svg width="38" height="12"><line x1="0" y1="6" x2="28" y2="6" stroke="#555" stroke-width="1.4" stroke-dasharray="5 2"/><polyline points="22,2 32,6 22,10" fill="none" stroke="#555" stroke-width="1.3"/></svg>
+      Dependency (uses)
+    </span>
+    <span style="font-size:11px; color:#333; display:flex; align-items:center; gap:6px;">
+      <svg width="38" height="12"><line x1="0" y1="6" x2="28" y2="6" stroke="#555" stroke-width="1.4"/><polyline points="22,2 32,6 22,10" fill="none" stroke="#555" stroke-width="1.3"/></svg>
+      Association
+    </span>
+    <span style="font-size:11px; color:#333; display:flex; align-items:center; gap:6px;">
+      <div style="width:14px;height:14px;background:#f5a623;border:1.5px solid #c07000;"></div>
+      &lt;&lt;interface&gt;&gt; (named)
+    </span>
+    <span style="font-size:11px; color:#333; display:flex; align-items:center; gap:6px;">
+      <div style="width:14px;height:14px;background:#fff;border:1.5px solid #555;"></div>
+      Class / Interface
+    </span>
+  </div>
+
+</div><!-- /frame -->
+
+</body>
+</html>

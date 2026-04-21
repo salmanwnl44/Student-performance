@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPulse System Schematic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blueprint-bg: #0b1e33;
+            --grid-line: rgba(0, 255, 255, 0.15);
+            --line-color: #00ffff;
+            --text-color: #e0f7fa;
+            --accent-color: #ffeb3b;
+        }
+
+        body {
+            background-color: var(--blueprint-bg);
+            background-image: 
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+                linear-gradient(rgba(0, 255, 255, 0.05) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 2px, transparent 2px);
+            background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+            font-family: 'Roboto Mono', monospace;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px;
+            overflow-x: hidden;
+        }
+
+        .schematic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
+            max-width: 1000px;
+            width: 100%;
+            position: relative;
+        }
+
+        .component {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1.5px solid var(--line-color);
+            padding: 20px 35px;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+
+        /* Engineering corner accents */
+        .component::before, .component::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: var(--accent-color);
+            border-style: solid;
+        }
+
+        .component::before {
+            top: -2px;
+            left: -2px;
+            border-width: 2px 0 0 2px;
+        }
+
+        .component::after {
+            bottom: -2px;
+            right: -2px;
+            border-width: 0 2px 2px 0;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: var(--line-color);
+        }
+
+        .meta {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .arrow-v {
+            width: 2px;
+            height: 50px;
+            background: var(--line-color);
+            position: relative;
+        }
+
+        .arrow-v::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: -4px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 10px solid var(--line-color);
+        }
+
+        .split-section {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .bus-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 80%;
+            height: 100%;
+            border-top: 2px solid var(--line-color);
+            border-left: 2px solid var(--line-color);
+            border-right: 2px solid var(--line-color);
+            transform: translateX(-50%);
+            z-index: 0;
+        }
+
+        .model-node {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            padding: 15px;
+            width: 180px;
+            text-align: center;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .model-node::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            width: 2px;
+            height: 40px;
+            background: var(--line-color);
+        }
+
+        .highlight {
+            color: var(--accent-color);
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            background: var(--line-color);
+            color: var(--blueprint-bg);
+            padding: 2px 6px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .technical-specs {
+            text-align: left;
+            font-size: 0.75rem;
+            margin-top: 10px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .technical-specs li::before {
+            content: '> ';
+            color: var(--accent-color);
+        }
+
+        .draft-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 0.7rem;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="schematic-container">
+        
+        <div class="component">
+            <span class="tag">MODULE ID: 01-INGRESS</span>
+            <div class="title">Synthetic Data Source</div>
+            <div>D_SET_SIZE: 50,000 UNIT_REC</div>
+            <div class="meta">REF: RAW_STUDENT_DATA_V1.0</div>
+        </div>
+
+        <div class="arrow-v"></div>
+
+        <div class="component">
+            <span class="tag">MODULE ID: 02-TRANSFORM</span>
+            <div class="title">Preprocessing Pipeline</div>
+            <ul class="technical-specs">
+                <li>OP: NULL_IMPUTATION [METHOD: MEDIAN]</li>
+                <li>OP: OUTLIER_REJECTION [Z-THRESHOLD: 3.0]</li>
+                <li>OP: CAT_ENCODING [TYPE: ONE_HOT]</li>
+            </ul>
+        </div>
+
+        <div class="arrow-v"></div>
+
+        <div class="component">
+            <span class="tag">MODULE ID: 03-PARTITION</span>
+            <div class="title">Dataset Splitter</div>
+            <div>TRAIN_RATIO: <span class="highlight">0.80</span></div>
+            <div>TEST_RATIO : <span class="highlight">0.20</span></div>
+        </div>
+
+        <div class="split-section">
+            <div class="bus-line"></div>
+            
+            <div class="model-node">
+                <div class="tag">MODEL: RF</div>
+                <div class="title" style="font-size: 0.9rem;">Random Forest</div>
+                <div class="meta">PARALLEL_JOBS: -1</div>
+            </div>
+            
+            <div class="model-node">
+                <div class="tag">MODEL: XGB</div>
+                <div class="title" style="font-size: 0.9rem;">XGBoost</div>
+                <div class="meta">BOOSTER: GBTREE</div>
+            </div>
+            
+            <div class="model-node">
+                <div class="tag">MODEL: LGBM</div>
+                <div class="title" style="font-size: 0.9rem;">LightGBM</div>
+                <div class="meta">TASK: TRAIN</div>
+            </div>
+        </div>
+
+        <div class="arrow-v"></div>
+
+        <div class="component">
+            <span class="tag">MODULE ID: 04-EVAL</span>
+            <div class="title">Performance Comparator</div>
+            <div>METRIC_PRIMARY: <span class="highlight">F1_SCORE</span></div>
+            <div class="meta">LOGS: ./models/training_metrics.json</div>
+        </div>
+
+        <div class="arrow-v"></div>
+
+        <div class="component" style="border-style: double; border-width: 4px;">
+            <span class="tag">MODULE ID: 05-EXPOSE</span>
+            <div class="title">FastAPI Production Layer</div>
+            <div style="margin-top: 10px; font-size: 0.8rem;">
+                [GET] /health <br>
+                [POST] /predict <br>
+                [GET] /metrics
+            </div>
+        </div>
+
+    </div>
+
+    <div class="draft-info">
+        PROJECT: EDUPULSE-RETENTION-ML<br>
+        DWG NO: EP-772-B<br>
+        DATE: 2026-04-20<br>
+        SCALE: NTS
+    </div>
+
+</body>
+</html>

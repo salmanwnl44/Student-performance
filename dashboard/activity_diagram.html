@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>EduPulse – UML Activity Diagram</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#f0f2f5;font-family:'Inter',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:32px 20px 60px;}
+    h1{font-size:1.25rem;font-weight:700;color:#1a1a2e;margin-bottom:4px;text-align:center;}
+    .sub{font-size:.8rem;color:#777;margin-bottom:22px;text-align:center;}
+    .wrap{background:#fff;border:1px solid #dde1e7;border-radius:12px;padding:28px 24px;box-shadow:0 4px 24px rgba(0,0,0,.09);}
+    svg text{font-family:'Inter',Arial,sans-serif;}
+  </style>
+</head>
+<body>
+<h1>EduPulse — UML Activity Diagram</h1>
+<p class="sub">Student Dropout Prediction System · End-to-End Activity Flow</p>
+<div class="wrap">
+<svg width="620" height="1020" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+    <polygon points="0 0,9 3.5,0 7" fill="#444"/>
+  </marker>
+  <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#00000015"/></filter>
+</defs>
+
+<!-- ── INITIAL NODE ── -->
+<circle cx="300" cy="40" r="16" fill="#1a1a2e" filter="url(#sh)"/>
+<line x1="300" y1="56" x2="300" y2="78" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- BOX 1 · User Entry · Blue -->
+<rect x="155" y="80" width="290" height="68" rx="10" fill="#dbeeff" stroke="#3b9eed" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="103" text-anchor="middle" font-size="12" font-weight="700" fill="#0f5a99">1. User Entry Point</text>
+<text x="300" y="119" text-anchor="middle" font-size="10" font-style="italic" fill="#2176ae">(Streamlit Dashboard / POST /predict)</text>
+<text x="300" y="137" text-anchor="middle" font-size="10" fill="#333">Student submits data for dropout prediction</text>
+<line x1="300" y1="148" x2="300" y2="170" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- BOX 2 · Data Ingestion · Blue -->
+<rect x="155" y="172" width="290" height="68" rx="10" fill="#dbeeff" stroke="#3b9eed" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="195" text-anchor="middle" font-size="12" font-weight="700" fill="#0f5a99">2. Data Ingestion</text>
+<text x="300" y="211" text-anchor="middle" font-size="10" font-style="italic" fill="#2176ae">(src/ingestion/)</text>
+<text x="300" y="229" text-anchor="middle" font-size="10" fill="#333">Load CSV · 50 000 student records</text>
+<line x1="300" y1="240" x2="300" y2="262" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- BOX 3 · Validation · Blue -->
+<rect x="155" y="264" width="290" height="68" rx="10" fill="#dbeeff" stroke="#3b9eed" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="287" text-anchor="middle" font-size="12" font-weight="700" fill="#0f5a99">3. Data Validation</text>
+<text x="300" y="303" text-anchor="middle" font-size="10" font-style="italic" fill="#2176ae">(src/validation/)</text>
+<text x="300" y="321" text-anchor="middle" font-size="10" fill="#333">Schema · null checks · range rules</text>
+<line x1="300" y1="332" x2="300" y2="354" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- DECISION 1 · Data Valid? -->
+<polygon points="300,356 352,390 300,424 248,390" fill="#fff" stroke="#444" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="387" text-anchor="middle" font-size="10" font-weight="700" fill="#222">Data Valid?</text>
+
+<!-- No → Error box (right) -->
+<line x1="352" y1="390" x2="415" y2="390" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+<text x="384" y="382" text-anchor="middle" font-size="10" font-weight="600" fill="#c0392b">No</text>
+<rect x="417" y="364" width="162" height="52" rx="8" fill="#fde8e8" stroke="#e05050" stroke-width="1.8" filter="url(#sh)"/>
+<text x="498" y="387" text-anchor="middle" font-size="11" font-weight="700" fill="#c0392b">Log Error</text>
+<text x="498" y="404" text-anchor="middle" font-size="10" fill="#a52020">Return 400 Bad Request</text>
+<!-- Error terminate -->
+<line x1="498" y1="416" x2="498" y2="438" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+<circle cx="498" cy="450" r="12" fill="none" stroke="#444" stroke-width="2"/>
+<circle cx="498" cy="450" r="7" fill="#444"/>
+
+<!-- Yes → Preprocessing -->
+<line x1="300" y1="424" x2="300" y2="446" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+<text x="310" y="440" font-size="10" font-weight="600" fill="#27ae60">Yes</text>
+
+<!-- BOX 4 · Preprocessing · Green -->
+<rect x="155" y="448" width="290" height="68" rx="10" fill="#d4f5e4" stroke="#3aaa6b" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="471" text-anchor="middle" font-size="12" font-weight="700" fill="#1d7a4a">4. Preprocessing</text>
+<text x="300" y="487" text-anchor="middle" font-size="10" font-style="italic" fill="#2d8a55">(src/preprocessing/)</text>
+<text x="300" y="505" text-anchor="middle" font-size="10" fill="#333">Encode · scale · impute missing values</text>
+<line x1="300" y1="516" x2="300" y2="538" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- BOX 5 · ML Core · Purple -->
+<rect x="155" y="540" width="290" height="80" rx="10" fill="#ede0f8" stroke="#8e44ad" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="562" text-anchor="middle" font-size="12" font-weight="700" fill="#6c2e9b">5. ML &amp; AI Core</text>
+<text x="300" y="578" text-anchor="middle" font-size="10" font-style="italic" fill="#8e44ad">(src/training/ · src/prediction/)</text>
+<text x="300" y="596" text-anchor="middle" font-size="10" fill="#333">Train / load model · predict dropout score</text>
+<text x="300" y="611" text-anchor="middle" font-size="10" fill="#333">Evaluate accuracy · F1 · AUC</text>
+<line x1="300" y1="620" x2="300" y2="642" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- DECISION 2 · High Risk? -->
+<polygon points="300,644 352,678 300,712 248,678" fill="#fff" stroke="#444" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="675" text-anchor="middle" font-size="10" font-weight="700" fill="#222">High Risk?</text>
+
+<!-- Yes → Intervention (right) -->
+<line x1="352" y1="678" x2="415" y2="678" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+<text x="384" y="670" text-anchor="middle" font-size="10" font-weight="600" fill="#b35f00">Yes</text>
+<rect x="417" y="652" width="162" height="52" rx="8" fill="#feebd0" stroke="#f5a623" stroke-width="2" filter="url(#sh)"/>
+<text x="498" y="675" text-anchor="middle" font-size="11" font-weight="700" fill="#b35f00">Intervention Plan</text>
+<text x="498" y="692" text-anchor="middle" font-size="10" fill="#a05000">src/intervention/</text>
+<!-- Intervention merge → RAG -->
+<line x1="498" y1="704" x2="498" y2="768" stroke="#444" stroke-width="1.8"/>
+<line x1="498" y1="768" x2="449" y2="768" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- No → RAG -->
+<line x1="300" y1="712" x2="300" y2="740" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+<text x="310" y="730" font-size="10" font-weight="600" fill="#555">No</text>
+
+<!-- BOX 6 · RAG Reasoning · Orange -->
+<rect x="155" y="742" width="290" height="68" rx="10" fill="#feebd0" stroke="#f5a623" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="765" text-anchor="middle" font-size="12" font-weight="700" fill="#b35f00">6. RAG Reasoning Engine</text>
+<text x="300" y="781" text-anchor="middle" font-size="10" font-style="italic" fill="#c07000">(src/rag/ · src/reasoning/)</text>
+<text x="300" y="799" text-anchor="middle" font-size="10" fill="#333">Generate AI explanation via ChromaDB + LLM</text>
+<line x1="300" y1="810" x2="300" y2="832" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- BOX 7 · Dashboard · Green -->
+<rect x="155" y="834" width="290" height="68" rx="10" fill="#d4f5e4" stroke="#3aaa6b" stroke-width="2" filter="url(#sh)"/>
+<text x="300" y="857" text-anchor="middle" font-size="12" font-weight="700" fill="#1d7a4a">7. Presentation Layer</text>
+<text x="300" y="873" text-anchor="middle" font-size="10" font-style="italic" fill="#2d8a55">(dashboard/app.py)</text>
+<text x="300" y="891" text-anchor="middle" font-size="10" fill="#333">Render results · charts · interventions</text>
+<line x1="300" y1="902" x2="300" y2="924" stroke="#444" stroke-width="1.8" marker-end="url(#arr)"/>
+
+<!-- ── FINAL NODE ── -->
+<circle cx="300" cy="948" r="16" fill="none" stroke="#1a1a2e" stroke-width="2.5" filter="url(#sh)"/>
+<circle cx="300" cy="948" r="10" fill="#1a1a2e"/>
+
+<!-- ── SIDE LABELS ── -->
+<text x="140" y="216" text-anchor="end" font-size="10" fill="#3b9eed" font-weight="600">Pulls Records</text>
+<text x="140" y="228" text-anchor="end" font-size="10" fill="#3b9eed">for Processing</text>
+<text x="140" y="875" text-anchor="end" font-size="10" fill="#3aaa6b" font-weight="600">4. Carries Answers</text>
+<text x="140" y="887" text-anchor="end" font-size="10" fill="#3aaa6b">to Surface</text>
+<text x="140" y="590" text-anchor="end" font-size="10" fill="#8e44ad" font-weight="600">2. Delivers</text>
+<text x="140" y="602" text-anchor="end" font-size="10" fill="#8e44ad">Questions</text>
+<text x="462" y="590" text-anchor="start" font-size="10" fill="#8e44ad" font-weight="600">3. Generates</text>
+<text x="462" y="602" text-anchor="start" font-size="10" fill="#8e44ad">Explanations</text>
+
+</svg>
+</div>
+</body>
+</html>
